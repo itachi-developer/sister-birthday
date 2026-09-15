@@ -187,12 +187,48 @@ function checkCollision() {
     return false;
 }
 
-// Controlli Mobile
-document.getElementById('up').addEventListener('touchstart', (e) => { e.preventDefault(); if (dy === 0) { dx = 0; dy = -1; }});
-document.getElementById('down').addEventListener('touchstart', (e) => { e.preventDefault(); if (dy === 0) { dx = 0; dy = 1; }});
-document.getElementById('left').addEventListener('touchstart', (e) => { e.preventDefault(); if (dx === 0) { dx = -1; dy = 0; }});
-document.getElementById('right').addEventListener('touchstart', (e) => { e.preventDefault(); if (dx === 0) { dx = 1; dy = 0; }});
+// --- CONTROLLI SNAKE UNIVERSALI (PC + MOBILE) ---
 
+// Funzione per cambiare direzione in sicurezza (evita di tornare indietro su se stessi)
+function changeDirection(newDx, newDy) {
+    // Se non si sta muovendo, partiamo subito
+    if (dx === 0 && dy === 0) {
+        dx = newDx; dy = newDy; return;
+    }
+    // Evita l'inversione a U sull'asse X
+    if (dx !== 0 && newDx !== 0) return; 
+    // Evita l'inversione a U sull'asse Y
+    if (dy !== 0 && newDy !== 0) return;
+    
+    dx = newDx;
+    dy = newDy;
+}
+
+// 1. Controlli per Tastiera (se la testa da PC)
+document.addEventListener('keydown', (e) => {
+    // Impedisce alla pagina di scrollare quando si usano le frecce
+    if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].indexOf(e.code) > -1) {
+        e.preventDefault();
+    }
+    
+    if (e.key === 'ArrowUp') changeDirection(0, -1);
+    if (e.key === 'ArrowDown') changeDirection(0, 1);
+    if (e.key === 'ArrowLeft') changeDirection(-1, 0);
+    if (e.key === 'ArrowRight') changeDirection(1, 0);
+});
+
+// 2. Controlli per Bottoni a schermo (Mouse Click + Touch su Mobile)
+const btnUp = document.getElementById('up');
+const btnDown = document.getElementById('down');
+const btnLeft = document.getElementById('left');
+const btnRight = document.getElementById('right');
+
+['click', 'touchstart'].forEach(eventType => {
+    btnUp.addEventListener(eventType, (e) => { e.preventDefault(); changeDirection(0, -1); });
+    btnDown.addEventListener(eventType, (e) => { e.preventDefault(); changeDirection(0, 1); });
+    btnLeft.addEventListener(eventType, (e) => { e.preventDefault(); changeDirection(-1, 0); });
+    btnRight.addEventListener(eventType, (e) => { e.preventDefault(); changeDirection(1, 0); });
+});
 
 // --- PWA: REGISTRAZIONE SERVICE WORKER ---
 if ('serviceWorker' in navigator) {
