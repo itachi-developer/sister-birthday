@@ -4,18 +4,23 @@ const views = document.querySelectorAll('.view');
 
 navItems.forEach(item => {
     item.addEventListener('click', () => {
-        // Rimuovi active da tutti
         navItems.forEach(nav => nav.classList.remove('active'));
         views.forEach(view => view.classList.remove('active'));
         
-        // Aggiungi active al cliccato
         item.classList.add('active');
         const target = item.getAttribute('data-target');
         document.getElementById(target).classList.add('active');
 
-        // Se apriamo lo snake, avvia o fai un reset
+        // Gestione giochi attivi
         if(target === 'snake') {
             resetSnake();
+            isPongActive = false; // Mette in pausa Pong
+        } else if (target === 'pong') {
+            resetPong();
+            clearInterval(gameInterval); // Mette in pausa Snake
+        } else {
+            clearInterval(gameInterval); // Mette in pausa tutto se sei in Home/Musica
+            isPongActive = false;
         }
     });
 });
@@ -235,4 +240,136 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
     .then(() => console.log("Service Worker Registrato!"))
     .catch(err => console.error("Errore SW:", err));
+}
+
+// ==========================================
+// --- PONG LOGIC ---
+// ==========================================
+const pongCanvas = document.getElementById('pongCanvas');
+const pongCtx = pongCanvas.getContext('2d');
+const playerPongScore = document.getElementById('pong-score-player');
+const cpuPongScore = document.getElementById('pong-score-cpu');
+
+let pongInterval;
+let isPongActive = false;
+
+// Variabili del gioco
+const ball = { x: 140, y: 175, r: 8, dx: 3, dy: 4, speed: 4 };
+const paddleWidth = 60;
+const paddleHeight = 10;
+const player = { x: 110, y: 330, score: 0 }; // Barra rosa (in basso)
+const cpu = { x: 110, y: 10, score: 0 };     // Barra blu (in alto)
+
+// --- CONTROLLI PONG (Touch e Mouse) ---
+function movePaddle(e) {
+    if (!isPongActive) return;
+    const rect = pongCanvas.getBoundingClientRect();
+    let clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+    let touchX = clientX - rect.left;
+    
+    // Mantiene la barra dentro il campo
+    let newX = touchX - paddleWidth / 2;
+    if (newX < 0) newX = 0;
+    if (newX + paddleWidth > pongCanvas.width) newX = pongCanvas.width - paddleWidth;
+    
+    player.x = newX;
+}
+
+pongCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); movePaddle(e); }, {passive: false});
+pongCanvas.addEventListener('mousemove', movePaddle);
+
+// --- FUNZIONI DI GIOCO ---
+function resetPong() {
+    player.score = 0; cpu.score = 0;
+    updatePongScore();
+    resetBall();
+    isPongActive = true;
+    clearInterval(pongInterval);
+    pongInterval = setInterval(updatePong, 1000/60); // 60 FPS
+}
+
+function resetBall() {
+    ball.x = pongCanvas.width / 2;
+    ball.y = pongCanvas.height / 2;
+    ball.dy = -ball.dy; // Cambia direzione
+    ball.dx = 3 * (Math.random() > 0.5 ? 1 : -1);
+}
+
+function updatePongScore() {
+    playerPongScore.innerText = player.score;
+    cpuPongScore.innerText = cpu.score;
+}
+
+function updatePong() {
+    if(!isPongActive) return;
+
+    // Intelligenza Artificiale (CPU)
+    // Insegue la palla ma con un leggero ritardo (0.1) per non renderla imbattibile
+    cpu.x += ((ball.x - (cpu.x + paddleWidth/2))) * 0.1;
+    if (cpu.x < 0) cpu.x = 0;
+    if (cpu.x + paddleWidth > pongCanvas.width) cpu.x = pongCanvas.width - paddleWidth;
+
+    // Muove la palla
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // Collisione con i muri laterali
+    if(ball.x - ball.r < 0 || ball.x + ball.r > pongCanvas.width) {
+        ball.dx = -ball.dx;
+    }
+
+    // Punto Segnato (top/bottom)
+    if(ball.y - ball.r < 0) {
+        player.score++; updatePongScore(); resetBall(); confetti();
+    } else if(ball.y + ball.r > pongCanvas.height) {
+        cpu.score++; updatePongScore(); resetBall();
+    }
+
+    // Collisione con la Barra GIOCATORE (in basso)
+    if(ball.y + ball.r > player.y && ball.x > player.x && ball.x < player.x + paddleWidth) {
+        ball.dy = -Math.abs(ball.dy); // Forza verso l'alto
+        // Aggiunge un po' di effetto (angolo) in base a dove colpisce la barra
+        ball.dx = (ball.x - (player.x + paddleWidth/2)) * 0.15;
+    }
+    
+    // Collisione con la Barra CPU (in alto)
+    if(ball.y - ball.r < cpu.y + paddleHeight && ball.x > cpu.x && ball.x < cpu.x + paddleWidth) {
+        ball.dy = Math.abs(ball.dy); // Forza verso il basso
+        ball.dx = (ball.x - (cpu.x + paddleWidth/2)) * 0.15;
+    }
+
+    drawPong();
+}
+
+function drawPong() {
+    // Sfondo del campo (Trasparente con effetto vetro)
+    pongCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    pongCtx.fillRect(0, 0, pongCanvas.width, pongCanvas.height);
+    
+    // Rete centrale
+    pongCtx.setLineDash([10, 10]);
+    pongCtx.beginPath();
+    pongCtx.moveTo(0, pongCanvas.height/2);
+    pongCtx.lineTo(pongCanvas.width, pongCanvas.height/2);
+    pongCtx.strokeStyle = 'rgba(0,0,0,0.1)';
+    pongCtx.stroke();
+    pongCtx.setLineDash([]); // Resetta
+
+    // Barra Giocatore (Rosa, usa il colore del tema)
+    pongCtx.fillStyle = '#fbc2eb';
+    pongCtx.beginPath();
+    pongCtx.roundRect(player.x, player.y, paddleWidth, paddleHeight, 5); // Bordi arrotondati
+    pongCtx.fill();
+
+    // Barra CPU (Azzurra)
+    pongCtx.fillStyle = '#a6c1ee';
+    pongCtx.beginPath();
+    pongCtx.roundRect(cpu.x, cpu.y, paddleWidth, paddleHeight, 5);
+    pongCtx.fill();
+
+    // Pallina
+    pongCtx.fillStyle = '#5a5a5a';
+    pongCtx.beginPath();
+    pongCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+    pongCtx.fill();
 }
