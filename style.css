@@ -142,3 +142,28 @@ h1, h2 { color: #5a5a5a; font-weight: 600; margin-bottom: 10px; line-height: 1.2
 }
 .bounce-icon { margin-top: 20px; color: #a6c1ee; font-size: 1.2em; animation: bounce 2s infinite; }
 @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
+
+/* --- OTTIMIZZAZIONE GPU MOBILE --- */
+.glass-card, .bottom-nav, .view {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform, opacity;
+}
+
+/* --- BANNER VITTORIA GLOBALE --- */
+.hidden-banner {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0; pointer-events: none;
+    z-index: 9999;
+    text-align: center;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 85%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+
+.hidden-banner.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1; pointer-events: all;
+}
