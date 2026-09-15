@@ -2,10 +2,6 @@
 const navItems = document.querySelectorAll('.nav-item');
 const views = document.querySelectorAll('.view');
 
-// PERCORSI DELLE IMMAGINI 
-const imgSorella = 'assets/faccia-sorella.jpg'; 
-const imgTu = 'assets/faccia-mia.jpg';
-
 navItems.forEach(item => {
     item.addEventListener('click', () => {
         // Rimuovi active da tutti
@@ -34,8 +30,8 @@ let isGameActive = true;
 let currentPlayer = 'sorella'; // o 'tu'
 
 // PERCORSI DELLE IMMAGINI 
-const imgSorella = 'assets/faccia-sorella.jpg'; 
-const imgTu = 'assets/faccia-mia.jpg';
+const imgSorella = 'assets/faccia_sorella.jpg'; 
+const imgTu = 'assets/faccia_mia.jpg';
 
 const winningConditions = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8], // Righe
