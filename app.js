@@ -29,9 +29,9 @@ let board = ['', '', '', '', '', '', '', '', ''];
 let isGameActive = true;
 let currentPlayer = 'sorella'; // o 'tu'
 
-// PERCORSI DELLE IMMAGINI (Sostituisci con le vostre foto in /assets)
-const imgSorella = 'assets/faccia-sorella.png'; 
-const imgTu = 'assets/faccia-tua.png';
+// PERCORSI DELLE IMMAGINI 
+const imgSorella = 'assets/faccia-sorella.jpg'; 
+const imgTu = 'assets/faccia-mia.png';
 
 const winningConditions = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8], // Righe
