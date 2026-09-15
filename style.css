@@ -1,0 +1,109 @@
+:root {
+    --bg-color: #fdfbfb;
+    --primary: #ff9a9e;
+    --secondary: #fecfef;
+    --text: #333;
+    --nav-bg: rgba(255, 255, 255, 0.9);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none; /* Previene selezione testo accidentale */
+}
+
+body {
+    background: linear-gradient(120deg, var(--bg-color) 0%, var(--secondary) 100%);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.view {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    padding-bottom: 80px; /* Spazio per la nav in basso */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.view.active {
+    display: block;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h1, h2 { color: #e91e63; margin-bottom: 15px; }
+
+/* BOTTOM NAVIGATION */
+.bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 70px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #eee;
+    z-index: 1000;
+}
+
+.nav-item {
+    background: none; border: none;
+    display: flex; flex-direction: column; align-items: center;
+    font-size: 24px; color: #888;
+    cursor: pointer; transition: 0.2s;
+}
+.nav-item span { font-size: 12px; margin-top: 4px; }
+.nav-item.active { color: #e91e63; transform: scale(1.1); filter: grayscale(0%); }
+.nav-item:not(.active) { filter: grayscale(100%); }
+
+/* TRIS */
+.board {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; margin: 20px auto;
+    width: 300px; height: 300px;
+}
+.cell {
+    background: white; border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 2em; cursor: pointer; overflow: hidden;
+}
+.cell img { width: 80%; height: 80%; object-fit: cover; border-radius: 50%; }
+
+.btn {
+    background: #e91e63; color: white;
+    border: none; padding: 12px 24px; border-radius: 25px;
+    font-size: 16px; font-weight: bold; margin-top: 15px;
+}
+
+/* SNAKE */
+#gameCanvas {
+    background: #fff; border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-top: 10px;
+}
+.d-pad { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.middle-row { display: flex; gap: 40px; }
+.d-pad button {
+    width: 60px; height: 60px; font-size: 24px;
+    border-radius: 50%; border: none;
+    background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.d-pad button:active { background: #eee; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
