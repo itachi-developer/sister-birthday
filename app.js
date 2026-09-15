@@ -55,8 +55,8 @@ let board = ['', '', '', '', '', '', '', '', ''];
 let isTrisActive = true;
 let currentPlayer = 'sorella'; 
 
-const imgSorella = 'assets/faccia-sorella.png'; // CONTROLLA IL NOME!
-const imgTu = 'assets/faccia-tua.png';          // CONTROLLA IL NOME!
+const imgSorella = 'assets/faccia_sorella.jpg'; // CONTROLLA IL NOME!
+const imgTu = 'assets/faccia_mia.jpg';          // CONTROLLA IL NOME!
 
 const winCond = [ [0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6] ];
 
