@@ -3,82 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tanti Auguri! ❤️</title>
+    <title>Auguri Sorellina! 💖</title>
+    
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ff9a9e">
-    <!-- Libreria per i coriandoli -->
+    <meta name="theme-color" content="#fbc2eb">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
+    <!-- Sfondo animato super elegante -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
     <!-- HOME -->
     <section id="home" class="view active">
-        <div class="container">
-            <h1>Buon 17° Compleanno! 🎉</h1>
-            <p>Ho creato questa piccola app per te.</p>
-            <div class="hero-image">🎂</div>
-            <p class="hint">Esplora i bottoni qui sotto 👇</p>
+        <div class="container glass-card">
+            <h1>Buon 17° <br>Compleanno! ✨</h1>
+            <p class="subtitle">Ho creato questo piccolo spazio digitale solo per te.</p>
+            
+            <!-- Effetto Polaroid -->
+            <div class="polaroid">
+                <!-- Metti una vostra foto bella qui -->
+                <img src="assets/foto-insieme.jpg" alt="Noi due" id="hero-pic">
+                <div class="polaroid-caption">Ti voglio bene! ❤️</div>
+            </div>
+            
+            <p class="hint">Esplora l'app dal menu in basso</p>
+            <i class="fa-solid fa-chevron-down bounce-icon"></i>
         </div>
     </section>
 
     <!-- TRIS -->
     <section id="tris" class="view">
-        <div class="container">
+        <div class="container glass-card">
             <h2>Tris di Facce</h2>
-            <div class="status" id="tris-status">Tocca a te!</div>
+            <div class="status badge" id="tris-status">Tocca a te!</div>
             <div class="board" id="board">
-                <div class="cell" data-index="0"></div>
-                <div class="cell" data-index="1"></div>
-                <div class="cell" data-index="2"></div>
-                <div class="cell" data-index="3"></div>
-                <div class="cell" data-index="4"></div>
-                <div class="cell" data-index="5"></div>
-                <div class="cell" data-index="6"></div>
-                <div class="cell" data-index="7"></div>
-                <div class="cell" data-index="8"></div>
+                <div class="cell" data-index="0"></div><div class="cell" data-index="1"></div><div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div><div class="cell" data-index="4"></div><div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div><div class="cell" data-index="7"></div><div class="cell" data-index="8"></div>
             </div>
-            <button class="btn" id="reset-tris">Ricomincia</button>
+            <button class="btn primary-btn" id="reset-tris"><i class="fa-solid fa-rotate-right"></i> Ricomincia</button>
         </div>
     </section>
 
     <!-- SNAKE -->
     <section id="snake" class="view">
-        <div class="container">
-            <h2>Hungry Sister 🍕</h2>
-            <p>Punteggio: <span id="score">0</span></p>
-            <canvas id="gameCanvas" width="300" height="300"></canvas>
+        <div class="container glass-card">
+            <h2>Hungry Sister</h2>
+            <div class="score-badge">Punteggio: <span id="score">0</span></div>
             
-            <!-- Controlli Touch per Mobile -->
-            <div class="controls">
-                <div class="d-pad">
-                    <button id="up">⬆️</button>
-                    <div class="middle-row">
-                        <button id="left">⬅️</button>
-                        <button id="right">➡️</button>
-                    </div>
-                    <button id="down">⬇️</button>
+            <div class="canvas-container">
+                <canvas id="gameCanvas" width="280" height="280"></canvas>
+            </div>
+            
+            <!-- Controlli Touch eleganti -->
+            <div class="d-pad">
+                <button class="glass-btn" id="up"><i class="fa-solid fa-caret-up"></i></button>
+                <div class="middle-row">
+                    <button class="glass-btn" id="left"><i class="fa-solid fa-caret-left"></i></button>
+                    <button class="glass-btn" id="right"><i class="fa-solid fa-caret-right"></i></button>
                 </div>
+                <button class="glass-btn" id="down"><i class="fa-solid fa-caret-down"></i></button>
             </div>
         </div>
     </section>
 
     <!-- PLAYLIST -->
     <section id="musica" class="view">
-        <div class="container">
-            <h2>Le nostre canzoni 🎵</h2>
-            <p>Una colonna sonora tutta per te.</p>
-            <!-- INSERISCI QUI IL TUO IFRAME DI SPOTIFY -->
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <div class="container glass-card">
+            <h2>La nostra Vibe 🎵</h2>
+            <p class="subtitle">Una colonna sonora tutta per te.</p>
+            <div class="spotify-wrapper">
+                <iframe style="border-radius:16px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
         </div>
     </section>
 
-    <!-- BOTTOM NAVIGATION -->
+    <!-- BOTTOM NAVIGATION STILE iOS -->
     <nav class="bottom-nav">
-        <button class="nav-item active" data-target="home">🏠<span>Home</span></button>
-        <button class="nav-item" data-target="tris">❌⭕<span>Tris</span></button>
-        <button class="nav-item" data-target="snake">🐍<span>Snake</span></button>
-        <button class="nav-item" data-target="musica">🎵<span>Musica</span></button>
+        <button class="nav-item active" data-target="home">
+            <i class="fa-solid fa-house"></i><span>Home</span>
+        </button>
+        <button class="nav-item" data-target="tris">
+            <i class="fa-solid fa-gamepad"></i><span>Tris</span>
+        </button>
+        <button class="nav-item" data-target="snake">
+            <i class="fa-solid fa-worm"></i><span>Snake</span>
+        </button>
+        <button class="nav-item" data-target="musica">
+            <i class="fa-solid fa-music"></i><span>Musica</span>
+        </button>
     </nav>
 
     <script src="app.js"></script>
