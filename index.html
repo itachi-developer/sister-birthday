@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Auguri Sorellina! 💖</title>
+    <title>Auguri Sorella! 💖</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,29 +22,42 @@
     <div id="ultimate-banner" class="hidden-banner glass-card">
         <h2>🎉 Congratulazioni! 🎉</h2>
         <p>Hai battuto tutti i giochi!</p>
-        <p class="subtitle">Ora vai in camera tua e guarda sotto il cuscino... 👀</p>
+        <p class="subtitle">Ora vai in camera e guarda sotto il mio cuscino... 👀</p>
         <button class="btn primary-btn" id="close-banner">Chiudi</button>
     </div>
 
-    <!-- HOME -->
+    <!-- HOME (Aggiornata con il menu a griglia) -->
     <section id="home" class="view active">
         <div class="container glass-card">
-            <h1>Buon 17° <br>Compleanno! ✨</h1>
-            <p class="subtitle">Ho creato questo piccolo spazio digitale solo per te.</p>
+            <h1>Buon Compleanno! ✨</h1>
             
-            <div class="polaroid">
-                <img src="assets/foto-insieme.jpg" alt="Noi due" id="hero-pic">
-                <div class="polaroid-caption">Ti voglio bene! ❤️</div>
+            <div class="polaroid" style="width: 55%; margin: 5px auto 15px auto;">
+                <img src="assets/foto-insieme.jpg" alt="Sbang" id="hero-pic">
             </div>
             
-            <p style="font-weight: bold; color: #e91e63; margin-top: 15px; font-size: 0.9em;">
-                🎁 Sfida: Vinci a Tris e Navale, fai 50 a Snake e 3 punti a Pong!
+            <p style="font-weight: bold; color: #e91e63; font-size: 0.9em; margin-bottom: 15px;">
+                🎁 Sfida: Vinci a Tris e Navale, fai 50 a Snake e 3 a Pong!
             </p>
             
-            <button class="btn primary-btn" id="go-to-music" style="margin-top: 15px; margin-bottom: 20px;">
-                <i class="fa-solid fa-music"></i> Vai alla Playlist
+            <!-- MENU GIOCHI -->
+            <div class="home-menu">
+                <button class="menu-card" data-target="tris">
+                    <i class="fa-solid fa-gamepad" style="color: #fbc2eb;"></i><span>Tris</span>
+                </button>
+                <button class="menu-card" data-target="navale">
+                    <i class="fa-solid fa-anchor" style="color: #a6c1ee;"></i><span>Navale</span>
+                </button>
+                <button class="menu-card" data-target="snake">
+                    <i class="fa-solid fa-worm" style="color: #a6c1ee;"></i><span>Snake</span>
+                </button>
+                <button class="menu-card" data-target="pong">
+                    <i class="fa-solid fa-table-tennis-paddle-ball" style="color: #fbc2eb;"></i><span>Pong</span>
+                </button>
+            </div>
+            
+            <button class="btn primary-btn" id="go-to-music" style="margin-top: 15px; width: 100%;">
+                <i class="fa-solid fa-music"></i> Apri la Playlist
             </button>
-            <br><i class="fa-solid fa-chevron-down bounce-icon"></i>
         </div>
     </section>
 
@@ -69,21 +82,27 @@
         <div class="container glass-card">
             <h2>Battaglia Navale ⚓</h2>
             <div class="score-badge">Vittorie tue: <span id="navale-wins">0</span></div>
-            <div class="status badge" id="navale-status" style="display:block; margin: 10px auto;">Prepara le flotte...</div>
+            <div class="status badge" id="navale-status" style="display:block; margin: 10px auto;">Preparazione...</div>
+
+            <!-- CONTROLLI DI POSIZIONAMENTO NAVI -->
+            <div id="navale-setup-controls" style="display:none; margin-bottom: 15px; background: rgba(255,255,255,0.6); padding: 10px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <p id="navale-setup-text" style="font-weight:bold; color:#e91e63; margin-bottom: 8px; font-size:14px;">Posiziona Nave 1 (Lunga 3)</p>
+                <button class="btn glass-btn" id="btn-rotate-ship" style="width:auto; height:auto; padding: 8px 15px; font-size:14px; border-radius:15px; color:#333; font-family:'Poppins', sans-serif;">
+                    <i class="fa-solid fa-rotate"></i> <span id="navale-orientation-text">Orizzontale ➡️</span>
+                </button>
+            </div>
 
             <div style="position:relative;">
-                <!-- Overlay Cambio Turno (Nasconde la griglia) -->
-                <div id="navale-overlay" class="glass-card" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; flex-direction:column; justify-content:center; align-items:center; background: rgba(255,255,255,0.95);">
-                    <h3 id="navale-overlay-text" style="color:#e91e63; margin-bottom: 20px;">Passa il telefono!</h3>
-                    <button class="btn primary-btn" id="btn-navale-ready">Inizia Turno</button>
+                <!-- Overlay Cambio Turno Anti-Cheating -->
+                <div id="navale-overlay" class="glass-card" style="display:none; position:absolute; top:-20px; left:-20px; right:-20px; bottom:-20px; z-index:100; flex-direction:column; justify-content:center; align-items:center; background: #fbc2eb; border: 4px solid white;">
+                    <h3 id="navale-overlay-text" style="color:#fff; margin-bottom: 20px; font-size:1.5em; text-shadow: 1px 1px 3px rgba(0,0,0,0.2);">Passa il telefono!</h3>
+                    <button class="btn" id="btn-navale-ready" style="background:white; color:#e91e63; font-weight:bold; padding: 12px 24px; border-radius: 25px; border:none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">Sono Pronto</button>
                 </div>
                 
-                <div class="board-navale" id="board-navale">
-                    <!-- Generato da JS -->
-                </div>
+                <div class="board-navale" id="board-navale"></div>
             </div>
-            <button class="btn primary-btn" id="reset-navale" style="margin-top: 10px;"><i class="fa-solid fa-rotate-right"></i> Nuova Partita</button>
-            <p class="hint" style="margin-top:10px">Trovate le 3 navi per primi!</p>
+            
+            <button class="btn primary-btn" id="reset-navale" style="margin-top: 15px;"><i class="fa-solid fa-rotate-right"></i> Resetta Partita</button>
         </div>
     </section>
 
@@ -92,11 +111,7 @@
         <div class="container glass-card">
             <h2>Hungry Sister</h2>
             <div class="score-badge">Punteggio: <span id="score">0</span> | Record: <span id="snake-highscore">0</span></div>
-            
-            <div class="canvas-container">
-                <canvas id="gameCanvas" width="280" height="280"></canvas>
-            </div>
-            
+            <div class="canvas-container"><canvas id="gameCanvas" width="280" height="280"></canvas></div>
             <div class="d-pad">
                 <button class="glass-btn" id="up"><i class="fa-solid fa-caret-up"></i></button>
                 <div class="middle-row">
@@ -114,12 +129,8 @@
             <h2>Pong 🏓</h2>
             <div class="score-badge">Tu: <span id="pong-score-player">0</span> - CPU: <span id="pong-score-cpu">0</span></div>
             <div class="score-badge" style="margin-bottom: 10px; display:block;">Punti massimi: <span id="pong-highscore">0</span></div>
-            
             <button class="btn primary-btn" id="btn-pong-pause" style="margin-bottom: 15px; padding: 10px 20px;"><i class="fa-solid fa-play"></i> Start</button>
-            
-            <div class="canvas-container">
-                <canvas id="pongCanvas" width="280" height="350"></canvas>
-            </div>
+            <div class="canvas-container"><canvas id="pongCanvas" width="280" height="350"></canvas></div>
             <p class="hint">Scorri il dito sul campo per muovere la barra rosa!</p>
         </div>
     </section>
@@ -129,24 +140,19 @@
         <div class="container glass-card">
             <h2>La nostra Vibe 🎵</h2>
             <p class="subtitle">Le tue canzoni preferite, zero lag.</p>
-            
             <div class="music-player">
-                <div class="record-wrapper">
-                    <img src="assets/foto-insieme.jpg" alt="Copertina" id="record-cover" class="record">
-                </div>
+                <div class="record-wrapper"><img src="assets/foto-insieme.jpg" alt="Copertina" id="record-cover" class="record"></div>
                 <h3 id="track-title">Caricamento...</h3>
-                
                 <div class="player-controls">
                     <button class="glass-btn small-btn" id="prev-track"><i class="fa-solid fa-backward"></i></button>
                     <button class="primary-btn play-btn" id="play-pause-btn"><i class="fa-solid fa-play"></i></button>
                     <button class="glass-btn small-btn" id="next-track"><i class="fa-solid fa-forward"></i></button>
                 </div>
             </div>
-            <p class="hint" style="margin-top:20px">La musica suona mentre giochi! 🎮</p>
         </div>
     </section>
 
-    <!-- NAVBAR (Ora con 6 icone) -->
+    <!-- NAVBAR IN BASSO -->
     <nav class="bottom-nav">
         <button class="nav-item active" data-target="home"><i class="fa-solid fa-house"></i><span>Home</span></button>
         <button class="nav-item" data-target="tris"><i class="fa-solid fa-gamepad"></i><span>Tris</span></button>
