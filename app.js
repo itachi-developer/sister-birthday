@@ -220,29 +220,31 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ==========================================
-// 7. PONG (Ora con Auto-Ripresa dopo il punto)
+// 7. PONG (Gameplay Fluidissimo & Anti-Bug)
 // ==========================================
 const pongCanvas = document.getElementById('pongCanvas'); const pongCtx = pongCanvas.getContext('2d'); const pScoreEl = document.getElementById('pong-score-player'); const cScoreEl = document.getElementById('pong-score-cpu');
-const btnPongPause = document.getElementById('btn-pong-pause'); const ball = { x: 140, y: 175, r: 12, dx: 0, dy: 0 }; const pw = 60; const ph = 10; const player = { x: 110, y: 330, score: 0 }; const cpu = { x: 110, y: 10, score: 0 }; 
+const btnPongPause = document.getElementById('btn-pong-pause'); 
+const ball = { x: 140, y: 175, r: 12, dx: 0, dy: 0, speed: 4 }; // Aggiunto parametro 'speed'
+const pw = 60; const ph = 10; const player = { x: 110, y: 330, score: 0 }; const cpu = { x: 110, y: 10, score: 0 }; 
 
 let pongPausedByUser = true; 
-let pongRoundDelay = false; // Gestisce la piccola pausa tra i turni
+let pongRoundDelay = false; 
 
 btnPongPause.addEventListener('click', () => { 
     pongPausedByUser = !pongPausedByUser; 
     btnPongPause.innerHTML = pongPausedByUser ? '<i class="fa-solid fa-play"></i> Start' : '<i class="fa-solid fa-pause"></i> Pausa'; 
-    // Se toglie la pausa e la palla è ferma al centro pronta a partire, lanciala!
     if (!pongPausedByUser && ball.dx === 0 && ball.dy === 0 && !pongRoundDelay) { serveBall(); } 
 });
 
-function serveBall() { ball.dy = 4; ball.dx = 3 * (Math.random() > 0.5 ? 1 : -1); }
+// Partenza dritta centrale. Il random decide solo se va a te o alla CPU
+function serveBall() { ball.dy = (Math.random() > 0.5 ? ball.speed : -ball.speed); ball.dx = 0; }
+
 function movePaddle(e) { if (!isPongActive) return; let clientX = e.type.includes('mouse') ? e.clientX : (e.touches ? e.touches[0].clientX : 0); let newX = clientX - pongCanvas.getBoundingClientRect().left - pw / 2; player.x = Math.max(0, Math.min(newX, pongCanvas.width - pw)); }
 pongCanvas.addEventListener('touchmove', e => { e.preventDefault(); movePaddle(e); }, {passive: false}); pongCanvas.addEventListener('mousemove', movePaddle);
 
 function resetPong() { 
     player.score = 0; cpu.score = 0; pScoreEl.innerText = '0'; cScoreEl.innerText = '0'; 
-    resetBall(true); // True = Resetta tutto e aspetta il click dell'utente
-    window.requestAnimationFrame(pongLoop); 
+    resetBall(true); window.requestAnimationFrame(pongLoop); 
 }
 
 function resetBall(isFullReset = false) { 
@@ -252,7 +254,6 @@ function resetBall(isFullReset = false) {
     if (isFullReset) {
         pongPausedByUser = true; btnPongPause.innerHTML = '<i class="fa-solid fa-play"></i> Start'; pongRoundDelay = false;
     } else {
-        // Pausa di 1 secondo tra un punto e l'altro, poi riparte da solo (se non si è cliccato Pausa)
         setTimeout(() => {
             pongRoundDelay = false;
             if (!pongPausedByUser && isPongActive) { serveBall(); }
@@ -267,15 +268,45 @@ function updatePong() {
     cpu.x += (targetX - cpu.x) * 0.1; cpu.x = Math.max(0, Math.min(cpu.x, pongCanvas.width - pw)); 
     
     if (pongPausedByUser || pongRoundDelay) return; 
-    ball.x += ball.dx; ball.y += ball.dy; if (ball.x - ball.r < 0 || ball.x + ball.r > pongCanvas.width) ball.dx = -ball.dx;
     
+    ball.x += ball.dx; ball.y += ball.dy; 
+    
+    // Rimbalzo sui muri laterali
+    if (ball.x - ball.r < 0) {
+        ball.x = ball.r; // Fix anti-incastro muro
+        ball.dx = -ball.dx;
+    } else if (ball.x + ball.r > pongCanvas.width) {
+        ball.x = pongCanvas.width - ball.r; // Fix anti-incastro muro
+        ball.dx = -ball.dx;
+    }
+    
+    // Punti
     if (ball.y - ball.r < 0) {
         player.score++; pScoreEl.innerText = player.score;
         if(player.score > highScores.pong) { highScores.pong = player.score; localStorage.setItem('pongHighScore', highScores.pong); document.getElementById('pong-highscore').innerText = highScores.pong; }
         if(player.score >= 3 && !hasWonPong) { hasWonPong = true; checkUltimateWin(); } confetti(); resetBall(false);
     } else if (ball.y + ball.r > pongCanvas.height) { cpu.score++; cScoreEl.innerText = cpu.score; resetBall(false); }
-    if (ball.y + ball.r > player.y && ball.x > player.x && ball.x < player.x + pw) { ball.dy = -Math.abs(ball.dy); ball.dx = (ball.x - (player.x + pw/2)) * 0.15; }
-    if (ball.y - ball.r < cpu.y + ph && ball.x > cpu.x && ball.x < cpu.x + pw) { ball.dy = Math.abs(ball.dy); ball.dx = (ball.x - (cpu.x + pw/2)) * 0.15; }
+    
+    // --- COLLISIONI BARRETTE (Nuova fisica anti-bug) ---
+    
+    // Collisione Giocatore (Barra in basso)
+    if (ball.dy > 0 && ball.y + ball.r > player.y && ball.x + ball.r > player.x && ball.x - ball.r < player.x + pw) { 
+        ball.dy = -ball.speed; // Ribalta verso l'alto
+        ball.y = player.y - ball.r; // FIX: Forza la palla "sopra" la barretta, impedendo compenetrazioni
+        
+        // Calcola l'angolo in base a dove colpisce la barra (da -3 a +3 max)
+        let hitPoint = (ball.x - (player.x + pw/2)) / (pw/2);
+        ball.dx = hitPoint * 3.5; 
+    }
+    
+    // Collisione CPU (Barra in alto)
+    if (ball.dy < 0 && ball.y - ball.r < cpu.y + ph && ball.x + ball.r > cpu.x && ball.x - ball.r < cpu.x + pw) { 
+        ball.dy = ball.speed; // Ribalta verso il basso
+        ball.y = cpu.y + ph + ball.r; // FIX: Forza la palla "sotto" la barretta
+        
+        let hitPoint = (ball.x - (cpu.x + pw/2)) / (pw/2);
+        ball.dx = hitPoint * 3.5;
+    }
 }
 
 function drawPong() {
