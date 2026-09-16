@@ -37,8 +37,8 @@
                 <div class="polaroid-caption">Ti voglio bene! ❤️</div>
             </div>
             
-            <p style="font-weight: bold; color: #e91e63; margin-top: 15px;">
-                🎁 Sfida: Vinci a Tris, raggiungi 50 a Snake e fai 3 punti a Pong!
+            <p style="font-weight: bold; color: #e91e63; margin-top: 15px; font-size: 0.9em;">
+                🎁 Sfida: Vinci a Tris e Navale, fai 50 a Snake e 3 punti a Pong!
             </p>
             
             <button class="btn primary-btn" id="go-to-music" style="margin-top: 15px; margin-bottom: 20px;">
@@ -61,6 +61,29 @@
                 <div class="cell" data-index="6"></div><div class="cell" data-index="7"></div><div class="cell" data-index="8"></div>
             </div>
             <button class="btn primary-btn" id="reset-tris"><i class="fa-solid fa-rotate-right"></i> Ricomincia</button>
+        </div>
+    </section>
+
+    <!-- BATTAGLIA NAVALE -->
+    <section id="navale" class="view">
+        <div class="container glass-card">
+            <h2>Battaglia Navale ⚓</h2>
+            <div class="score-badge">Vittorie tue: <span id="navale-wins">0</span></div>
+            <div class="status badge" id="navale-status" style="display:block; margin: 10px auto;">Prepara le flotte...</div>
+
+            <div style="position:relative;">
+                <!-- Overlay Cambio Turno (Nasconde la griglia) -->
+                <div id="navale-overlay" class="glass-card" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; flex-direction:column; justify-content:center; align-items:center; background: rgba(255,255,255,0.95);">
+                    <h3 id="navale-overlay-text" style="color:#e91e63; margin-bottom: 20px;">Passa il telefono!</h3>
+                    <button class="btn primary-btn" id="btn-navale-ready">Inizia Turno</button>
+                </div>
+                
+                <div class="board-navale" id="board-navale">
+                    <!-- Generato da JS -->
+                </div>
+            </div>
+            <button class="btn primary-btn" id="reset-navale" style="margin-top: 10px;"><i class="fa-solid fa-rotate-right"></i> Nuova Partita</button>
+            <p class="hint" style="margin-top:10px">Trovate le 3 navi per primi!</p>
         </div>
     </section>
 
@@ -123,10 +146,11 @@
         </div>
     </section>
 
-    <!-- NAVBAR -->
+    <!-- NAVBAR (Ora con 6 icone) -->
     <nav class="bottom-nav">
         <button class="nav-item active" data-target="home"><i class="fa-solid fa-house"></i><span>Home</span></button>
         <button class="nav-item" data-target="tris"><i class="fa-solid fa-gamepad"></i><span>Tris</span></button>
+        <button class="nav-item" data-target="navale"><i class="fa-solid fa-anchor"></i><span>Navale</span></button>
         <button class="nav-item" data-target="snake"><i class="fa-solid fa-worm"></i><span>Snake</span></button>
         <button class="nav-item" data-target="pong"><i class="fa-solid fa-table-tennis-paddle-ball"></i><span>Pong</span></button>
         <button class="nav-item" data-target="musica"><i class="fa-solid fa-music"></i><span>Musica</span></button>
