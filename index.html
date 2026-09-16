@@ -27,13 +27,21 @@
             <h1>Buon 17° <br>Compleanno! ✨</h1>
             <p class="subtitle">Ho creato questo piccolo spazio digitale per te.</p>
             
-            <!-- Effetto Polaroid -->
             <div class="polaroid">
-                <img src="assets/foto-insieme.jpg" alt="" id="hero-pic">
+                <img src="assets/foto-insieme.jpg" alt="Sbang" id="hero-pic">
                 <div class="polaroid-caption">❤️</div>
             </div>
             
-            <p class="hint">Scegli una canzone e inizia a giocare 🎵</p>
+            <!-- NUOVO MESSAGGIO E BOTTONE MUSICA -->
+            <p style="font-weight: bold; color: #e91e63; margin-top: 15px;">
+                🎁 Sfida: Completa almeno una vittoria a Tris, una a Snake e una a Pong.
+            </p>
+            
+            <button class="btn primary-btn" id="go-to-music" style="margin-top: 15px; margin-bottom: 20px;">
+                <i class="fa-solid fa-music"></i> Vai alla Playlist
+            </button>
+            
+            <br>
             <i class="fa-solid fa-chevron-down bounce-icon"></i>
         </div>
     </section>
@@ -42,7 +50,8 @@
     <section id="tris" class="view">
         <div class="container glass-card">
             <h2>Tris di Facce</h2>
-            <div class="status badge" id="tris-status">Tocca a te!</div>
+            <div class="score-badge">Vittorie totali: <span id="tris-wins">0</span></div>
+<div class="status badge" id="tris-status">Tocca a te!</div>
             <div class="board" id="board">
                 <div class="cell" data-index="0"></div><div class="cell" data-index="1"></div><div class="cell" data-index="2"></div>
                 <div class="cell" data-index="3"></div><div class="cell" data-index="4"></div><div class="cell" data-index="5"></div>
@@ -56,7 +65,7 @@
     <section id="snake" class="view">
         <div class="container glass-card">
             <h2>Hungry Sister</h2>
-            <div class="score-badge">Punteggio: <span id="score">0</span></div>
+            <div class="score-badge">Punteggio: <span id="score">0</span> | Record: <span id="snake-highscore">0</span></div>
             
             <div class="canvas-container">
                 <canvas id="gameCanvas" width="280" height="280"></canvas>
@@ -79,6 +88,8 @@
         <div class="container glass-card">
             <h2>Pong 🏓</h2>
             <div class="score-badge">Tu: <span id="pong-score-player">0</span> - CPU: <span id="pong-score-cpu">0</span></div>
+<div class="score-badge" style="margin-bottom: 10px;">Punti massimi di fila: <span id="pong-highscore">0</span></div>
+<button class="btn primary-btn" id="btn-pong-pause" style="margin-bottom: 15px; padding: 10px 20px;"><i class="fa-solid fa-play"></i> Start</button>
             
             <div class="canvas-container">
                 <canvas id="pongCanvas" width="280" height="350"></canvas>
