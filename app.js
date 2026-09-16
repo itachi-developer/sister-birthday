@@ -6,6 +6,25 @@ let hasWonSnake = false; // Si vince a 50 punti
 let hasWonPong = false;  // Si vince a 3 punti
 let bannerShown = false;
 
+// ==========================================
+// --- SISTEMA SALVATAGGIO RECORD (LocalStorage) ---
+// ==========================================
+let highScores = {
+    tris: parseInt(localStorage.getItem('trisWins')) || 0,
+    snake: parseInt(localStorage.getItem('snakeHighScore')) || 0,
+    pong: parseInt(localStorage.getItem('pongHighScore')) || 0
+};
+
+// Mostra subito i record salvati
+document.getElementById('tris-wins').innerText = highScores.tris;
+document.getElementById('snake-highscore').innerText = highScores.snake;
+document.getElementById('pong-highscore').innerText = highScores.pong;
+
+// Tasto rapido dalla Home alla Playlist
+document.getElementById('go-to-music').addEventListener('click', () => {
+    document.querySelector('.nav-item[data-target="musica"]').click();
+});
+
 function checkUltimateWin() {
     if (hasWonTris && hasWonSnake && hasWonPong && !bannerShown) {
         bannerShown = true;
@@ -70,13 +89,20 @@ cells.forEach(cell => cell.addEventListener('click', (e) => {
     let roundWon = winCond.some(combo => board[combo[0]] && board[combo[0]] === board[combo[1]] && board[combo[0]] === board[combo[2]]);
     
     if (roundWon) {
-        status.innerText = `Ha vinto ${currentPlayer === 'sorella' ? 'la festeggiata!' : 'il fratello!'}`;
-        isTrisActive = false;
-        hasWonTris = true; // REQUISITO TRIS RAGGIUNTO!
-        checkUltimateWin();
-        confetti();
-        return;
+    status.innerText = `Ha vinto ${currentPlayer === 'sorella' ? 'la festeggiata!' : 'il fratello!'}`;
+    isTrisActive = false;
+    hasWonTris = true; 
+    checkUltimateWin();
+    confetti();
+
+    // AGGIUNGI QUESTO: Salva vittoria
+    if(currentPlayer === 'sorella') {
+        highScores.tris++;
+        localStorage.setItem('trisWins', highScores.tris);
+        document.getElementById('tris-wins').innerText = highScores.tris;
     }
+    return;
+}
     if (!board.includes('')) { status.innerText = 'Pareggio!'; isTrisActive = false; return; }
 
     currentPlayer = currentPlayer === 'sorella' ? 'tu' : 'sorella';
@@ -133,7 +159,18 @@ function updateSnake() {
     
     snake.unshift(head);
     if (head.x === foodX && head.y === foodY) {
-        score += 10; scoreElement.innerText = score;
+    score += 10; scoreElement.innerText = score;
+
+    // AGGIUNGI QUESTO: Salva Record Snake
+    if(score > highScores.snake) {
+        highScores.snake = score;
+        localStorage.setItem('snakeHighScore', highScores.snake);
+        document.getElementById('snake-highscore').innerText = highScores.snake;
+    }
+
+    if (score >= 50 && !hasWonSnake) { hasWonSnake = true; checkUltimateWin(); }
+    placeFood();
+}
         if (score >= 50 && !hasWonSnake) { // REQUISITO SNAKE RAGGIUNTO!
             hasWonSnake = true; checkUltimateWin();
         }
@@ -170,16 +207,30 @@ document.addEventListener('keydown', (e) => {
 
 
 // ==========================================
-// --- PONG LOGIC (Ottimizzato con pausa) ---
+// --- PONG LOGIC (Aggiornato con Start/Pausa, Record e Faccia) ---
 // ==========================================
 const pongCanvas = document.getElementById('pongCanvas'); const pongCtx = pongCanvas.getContext('2d');
 const pScoreEl = document.getElementById('pong-score-player'); const cScoreEl = document.getElementById('pong-score-cpu');
+const btnPongPause = document.getElementById('btn-pong-pause');
 
-const ball = { x: 140, y: 175, r: 8, dx: 0, dy: 0, speed: 5 };
+// Pallina più grande per far vedere la faccia
+const ball = { x: 140, y: 175, r: 12, dx: 0, dy: 0 };
 const pw = 60; const ph = 10;
 const player = { x: 110, y: 330, score: 0 }; 
 const cpu = { x: 110, y: 10, score: 0 };
-let pongPaused = false; // Variabile per la pausa di 1 sec
+let pongPaused = true; // All'inizio è fermo, aspetta lo Start
+
+// Bottone Start / Pausa
+btnPongPause.addEventListener('click', () => {
+    pongPaused = !pongPaused;
+    btnPongPause.innerHTML = pongPaused ? '<i class="fa-solid fa-play"></i> Start' : '<i class="fa-solid fa-pause"></i> Pausa';
+    
+    // Se era fermo a centro campo senza velocità, fagli iniziare il movimento
+    if (!pongPaused && ball.dx === 0 && ball.dy === 0) {
+        ball.dy = 4;
+        ball.dx = 3 * (Math.random() > 0.5 ? 1 : -1);
+    }
+});
 
 function movePaddle(e) {
     if (!isPongActive) return;
@@ -192,54 +243,57 @@ pongCanvas.addEventListener('mousemove', movePaddle);
 
 function resetPong() {
     player.score = 0; cpu.score = 0; pScoreEl.innerText = '0'; cScoreEl.innerText = '0';
-    resetBall(true);
+    pongPaused = true;
+    btnPongPause.innerHTML = '<i class="fa-solid fa-play"></i> Start';
+    resetBall();
     window.requestAnimationFrame(pongLoop);
 }
 
-function resetBall(firstStart = false) {
+function resetBall() {
     ball.x = pongCanvas.width / 2; ball.y = pongCanvas.height / 2;
-    ball.dx = 0; ball.dy = 0; // Palla ferma
+    ball.dx = 0; ball.dy = 0; // Ferma in attesa di Start
     pongPaused = true;
-    
-    // Pausa di 1 secondo prima di far partire la palla
-    setTimeout(() => {
-        if(!isPongActive) return;
-        ball.dy = firstStart ? 4 : (Math.random() > 0.5 ? 4 : -4);
-        ball.dx = 3 * (Math.random() > 0.5 ? 1 : -1);
-        pongPaused = false;
-    }, 1000);
+    btnPongPause.innerHTML = '<i class="fa-solid fa-play"></i> Start';
 }
 
 function pongLoop() {
     if (!isPongActive) return;
     updatePong();
     drawPong();
-    window.requestAnimationFrame(pongLoop); // FPS sbloccati (60fps)
+    window.requestAnimationFrame(pongLoop);
 }
 
 function updatePong() {
-    // La CPU e il Giocatore possono muoversi anche in pausa
-    cpu.x += ((ball.x - (cpu.x + pw/2))) * 0.1;
+    // La CPU cerca di riposizionarsi al centro se il gioco è in pausa, altrimenti insegue la palla
+    let targetX = pongPaused ? (pongCanvas.width/2 - pw/2) : (ball.x - pw/2);
+    cpu.x += (targetX - cpu.x) * 0.1;
     cpu.x = Math.max(0, Math.min(cpu.x, pongCanvas.width - pw));
 
-    if (pongPaused) return; // Ferma solo la palla in pausa
+    if (pongPaused) return; 
 
     ball.x += ball.dx; ball.y += ball.dy;
 
+    // Rimbalzi sui muri laterali
     if (ball.x - ball.r < 0 || ball.x + ball.r > pongCanvas.width) ball.dx = -ball.dx;
 
     // Punti
     if (ball.y - ball.r < 0) {
         player.score++; pScoreEl.innerText = player.score;
-        if(player.score >= 3 && !hasWonPong) { // REQUISITO PONG RAGGIUNTO!
-            hasWonPong = true; checkUltimateWin();
+        
+        // Salvataggio Record Pong
+        if(player.score > highScores.pong) {
+            highScores.pong = player.score;
+            localStorage.setItem('pongHighScore', highScores.pong);
+            document.getElementById('pong-highscore').innerText = highScores.pong;
         }
+
+        if(player.score >= 3 && !hasWonPong) { hasWonPong = true; checkUltimateWin(); }
         confetti(); resetBall();
     } else if (ball.y + ball.r > pongCanvas.height) {
         cpu.score++; cScoreEl.innerText = cpu.score; resetBall();
     }
 
-    // Collisioni Barrette
+    // Collisioni Barrette (Effetto curva)
     if (ball.y + ball.r > player.y && ball.x > player.x && ball.x < player.x + pw) {
         ball.dy = -Math.abs(ball.dy); ball.dx = (ball.x - (player.x + pw/2)) * 0.15;
     }
@@ -250,9 +304,31 @@ function updatePong() {
 
 function drawPong() {
     pongCtx.clearRect(0, 0, pongCanvas.width, pongCanvas.height);
+    
+    // Rete
     pongCtx.setLineDash([10, 10]); pongCtx.beginPath(); pongCtx.moveTo(0, pongCanvas.height/2); pongCtx.lineTo(pongCanvas.width, pongCanvas.height/2);
     pongCtx.strokeStyle = 'rgba(0,0,0,0.1)'; pongCtx.stroke(); pongCtx.setLineDash([]);
+    
+    // Barrette
     pongCtx.fillStyle = '#fbc2eb'; pongCtx.beginPath(); pongCtx.roundRect(player.x, player.y, pw, ph, 5); pongCtx.fill();
     pongCtx.fillStyle = '#a6c1ee'; pongCtx.beginPath(); pongCtx.roundRect(cpu.x, cpu.y, pw, ph, 5); pongCtx.fill();
-    pongCtx.fillStyle = '#5a5a5a'; pongCtx.beginPath(); pongCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); pongCtx.fill();
+    
+    // DISEGNO DELLA PALLINA COME FACCIA
+    pongCtx.save();
+    pongCtx.beginPath();
+    pongCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2, true); // Crea un percorso circolare
+    pongCtx.closePath();
+    pongCtx.clip(); // Ritaglia l'immagine successiva dentro a questo cerchio
+    
+    // headImg è già definita in Snake e contiene la faccia di tua sorella!
+    pongCtx.drawImage(headImg, ball.x - ball.r, ball.y - ball.r, ball.r * 2, ball.r * 2); 
+    
+    // Bordo della pallina (Opzionale, rende l'immagine più staccata dallo sfondo)
+    pongCtx.beginPath();
+    pongCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2, true);
+    pongCtx.strokeStyle = '#fff';
+    pongCtx.lineWidth = 2;
+    pongCtx.stroke();
+    
+    pongCtx.restore();
 }
