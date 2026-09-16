@@ -1,10 +1,7 @@
 :root {
-    --primary: #fbc2eb;
-    --secondary: #a6c1ee;
-    --text-dark: #4a4a4a;
-    --text-light: #7a7a7a;
-    --glass-bg: rgba(255, 255, 255, 0.65);
-    --glass-border: rgba(255, 255, 255, 0.4);
+    --primary: #fbc2eb; --secondary: #a6c1ee;
+    --text-dark: #4a4a4a; --text-light: #7a7a7a;
+    --glass-bg: rgba(255, 255, 255, 0.65); --glass-border: rgba(255, 255, 255, 0.4);
 }
 * {
     box-sizing: border-box; margin: 0; padding: 0;
@@ -12,8 +9,7 @@
     user-select: none; -webkit-tap-highlight-color: transparent;
 }
 body {
-    background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
-    background-attachment: fixed; color: var(--text-dark);
+    background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); background-attachment: fixed; color: var(--text-dark);
     height: 100vh; overflow: hidden; display: flex; flex-direction: column; position: relative;
 }
 .bg-shape { position: absolute; border-radius: 50%; filter: blur(60px); z-index: -1; }
@@ -41,20 +37,35 @@ h1, h2 { color: #5a5a5a; font-weight: 600; margin-bottom: 10px; line-height: 1.2
 .polaroid-caption { font-family: 'Brush Script MT', cursive, sans-serif; font-size: 1.5em; color: #333; margin-top: 10px; }
 .primary-btn {
     background: linear-gradient(135deg, #a6c1ee, #fbc2eb); color: #fff; border: none; padding: 14px 30px;
-    border-radius: 30px; font-weight: 600; font-size: 16px; box-shadow: 0 8px 20px rgba(166, 193, 238, 0.4);
-    cursor: pointer; transition: 0.2s; margin-top: 20px;
+    border-radius: 30px; font-weight: 600; font-size: 16px; box-shadow: 0 8px 20px rgba(166, 193, 238, 0.4); cursor: pointer; transition: 0.2s; margin-top: 20px;
 }
 .primary-btn:active { transform: scale(0.95); }
 .badge, .score-badge {
     background: rgba(255, 255, 255, 0.8); padding: 8px 16px; border-radius: 20px; display: inline-block;
     font-weight: 600; font-size: 0.9em; color: #5a5a5a; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 15px;
 }
+/* TRIS */
 .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 25px auto; width: 280px; height: 280px; }
 .cell {
     background: rgba(255,255,255,0.7); border-radius: 18px; box-shadow: inset 0 2px 5px rgba(255,255,255,0.8), 0 4px 10px rgba(0,0,0,0.05);
     display: flex; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; transition: 0.2s;
 }
 .cell img { width: 85%; height: 85%; object-fit: cover; border-radius: 50%; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+/* BATTAGLIA NAVALE */
+.board-navale {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+    margin: 15px auto; width: 280px; height: 280px;
+}
+.cell-navale {
+    background: rgba(255,255,255,0.6); border-radius: 8px;
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.8), 0 2px 5px rgba(0,0,0,0.05);
+    display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; transition: 0.2s;
+}
+.cell-navale.miss { background: rgba(166, 193, 238, 0.4); }
+.cell-navale img { width: 90%; height: 90%; border-radius: 50%; object-fit: cover; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+/* GIOCHI CANVAS */
 .canvas-container { margin-bottom: 20px; }
 #gameCanvas, #pongCanvas { background: rgba(255,255,255,0.8); border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 2px solid #fff; }
 .d-pad { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -64,16 +75,18 @@ h1, h2 { color: #5a5a5a; font-weight: 600; margin-bottom: 10px; line-height: 1.2
     border: 1px solid rgba(255,255,255,0.9); border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; backdrop-filter: blur(5px);
 }
 .glass-btn:active { background: rgba(255,255,255,0.9); transform: scale(0.92); }
+
+/* NAVBAR (Ristretta per 6 elementi) */
 .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; height: 80px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
     display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 30px 30px 0 0; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); transform: translateZ(0); will-change: transform;
+    border-radius: 30px 30px 0 0; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
 }
 .nav-item {
     background: none; border: none; display: flex; flex-direction: column; align-items: center;
-    color: #a0a0a0; font-size: 22px; cursor: pointer; transition: 0.3s; width: 60px; padding-top: 5px;
+    color: #a0a0a0; font-size: 20px; cursor: pointer; transition: 0.3s; width: 50px; padding-top: 5px;
 }
-.nav-item span { font-size: 11px; margin-top: 6px; font-weight: 600; opacity: 0; transform: translateY(10px); transition: 0.3s; }
+.nav-item span { font-size: 10px; margin-top: 6px; font-weight: 600; opacity: 0; transform: translateY(10px); transition: 0.3s; }
 .nav-item.active { color: #fbc2eb; transform: translateY(-5px); }
 .nav-item.active span { opacity: 1; transform: translateY(0); color: #5a5a5a; }
 
