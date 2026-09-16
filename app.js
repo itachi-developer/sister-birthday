@@ -252,7 +252,7 @@ function drawPong() {
 // ==========================================
 // 8. MUSICA NATIVA
 // ==========================================
-const playlist = [ { title: "Canzone 1", src: "assets/brano1.mp3" }, { title: "Canzone 2", src: "assets/brano2.mp3" } ]; let currentTrackIndex = 0; const bgAudio = new Audio(); bgAudio.volume = 0.5; bgAudio.loop = false; 
+const playlist = [ { title: "Canzone 1", src: "assets/brano1.mp3" }, { title: "Canzone 2", src: "assets/brano2.mp3" }, { title: "Canzone 3", src: "assets/brano3.mp3" }, { title: "Canzone 4", src: "assets/brano4.mp3" }, { title: "Canzone 5", src: "assets/brano5.mp3" }, { title: "Canzone 6", src: "assets/brano6.mp3" }, { title: "Canzone 7", src: "assets/brano7.mp3" }, { title: "Canzone 8", src: "assets/brano8.mp3" }, { title: "Canzone 9", src: "assets/brano9.mp3" }, { title: "Canzone 10", src: "assets/brano10.mp3" }]; let currentTrackIndex = 0; const bgAudio = new Audio(); bgAudio.volume = 0.5; bgAudio.loop = false; 
 const btnPlayPause = document.getElementById('play-pause-btn'); const trackTitle = document.getElementById('track-title'); const recordCover = document.getElementById('record-cover');
 function loadTrack(index) { bgAudio.src = playlist[index].src; trackTitle.innerText = playlist[index].title; } loadTrack(currentTrackIndex);
 function toggleAudio() { if (bgAudio.paused) { bgAudio.play(); btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i>'; recordCover.classList.add('playing'); } else { bgAudio.pause(); btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>'; recordCover.classList.remove('playing'); } }
