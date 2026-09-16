@@ -220,28 +220,64 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ==========================================
-// 7. PONG
+// 7. PONG (Ora con Auto-Ripresa dopo il punto)
 // ==========================================
 const pongCanvas = document.getElementById('pongCanvas'); const pongCtx = pongCanvas.getContext('2d'); const pScoreEl = document.getElementById('pong-score-player'); const cScoreEl = document.getElementById('pong-score-cpu');
-const btnPongPause = document.getElementById('btn-pong-pause'); const ball = { x: 140, y: 175, r: 12, dx: 0, dy: 0 }; const pw = 60; const ph = 10; const player = { x: 110, y: 330, score: 0 }; const cpu = { x: 110, y: 10, score: 0 }; let pongPaused = true; 
+const btnPongPause = document.getElementById('btn-pong-pause'); const ball = { x: 140, y: 175, r: 12, dx: 0, dy: 0 }; const pw = 60; const ph = 10; const player = { x: 110, y: 330, score: 0 }; const cpu = { x: 110, y: 10, score: 0 }; 
 
-btnPongPause.addEventListener('click', () => { pongPaused = !pongPaused; btnPongPause.innerHTML = pongPaused ? '<i class="fa-solid fa-play"></i> Start' : '<i class="fa-solid fa-pause"></i> Pausa'; if (!pongPaused && ball.dx === 0 && ball.dy === 0) { ball.dy = 4; ball.dx = 3 * (Math.random() > 0.5 ? 1 : -1); } });
+let pongPausedByUser = true; 
+let pongRoundDelay = false; // Gestisce la piccola pausa tra i turni
+
+btnPongPause.addEventListener('click', () => { 
+    pongPausedByUser = !pongPausedByUser; 
+    btnPongPause.innerHTML = pongPausedByUser ? '<i class="fa-solid fa-play"></i> Start' : '<i class="fa-solid fa-pause"></i> Pausa'; 
+    // Se toglie la pausa e la palla è ferma al centro pronta a partire, lanciala!
+    if (!pongPausedByUser && ball.dx === 0 && ball.dy === 0 && !pongRoundDelay) { serveBall(); } 
+});
+
+function serveBall() { ball.dy = 4; ball.dx = 3 * (Math.random() > 0.5 ? 1 : -1); }
 function movePaddle(e) { if (!isPongActive) return; let clientX = e.type.includes('mouse') ? e.clientX : (e.touches ? e.touches[0].clientX : 0); let newX = clientX - pongCanvas.getBoundingClientRect().left - pw / 2; player.x = Math.max(0, Math.min(newX, pongCanvas.width - pw)); }
 pongCanvas.addEventListener('touchmove', e => { e.preventDefault(); movePaddle(e); }, {passive: false}); pongCanvas.addEventListener('mousemove', movePaddle);
-function resetPong() { player.score = 0; cpu.score = 0; pScoreEl.innerText = '0'; cScoreEl.innerText = '0'; pongPaused = true; btnPongPause.innerHTML = '<i class="fa-solid fa-play"></i> Start'; resetBall(); window.requestAnimationFrame(pongLoop); }
-function resetBall() { ball.x = pongCanvas.width / 2; ball.y = pongCanvas.height / 2; ball.dx = 0; ball.dy = 0; pongPaused = true; btnPongPause.innerHTML = '<i class="fa-solid fa-play"></i> Start'; }
+
+function resetPong() { 
+    player.score = 0; cpu.score = 0; pScoreEl.innerText = '0'; cScoreEl.innerText = '0'; 
+    resetBall(true); // True = Resetta tutto e aspetta il click dell'utente
+    window.requestAnimationFrame(pongLoop); 
+}
+
+function resetBall(isFullReset = false) { 
+    ball.x = pongCanvas.width / 2; ball.y = pongCanvas.height / 2; ball.dx = 0; ball.dy = 0; 
+    pongRoundDelay = true;
+    
+    if (isFullReset) {
+        pongPausedByUser = true; btnPongPause.innerHTML = '<i class="fa-solid fa-play"></i> Start'; pongRoundDelay = false;
+    } else {
+        // Pausa di 1 secondo tra un punto e l'altro, poi riparte da solo (se non si è cliccato Pausa)
+        setTimeout(() => {
+            pongRoundDelay = false;
+            if (!pongPausedByUser && isPongActive) { serveBall(); }
+        }, 1000);
+    }
+}
+
 function pongLoop() { if (!isPongActive) return; updatePong(); drawPong(); window.requestAnimationFrame(pongLoop); }
+
 function updatePong() {
-    let targetX = pongPaused ? (pongCanvas.width/2 - pw/2) : (ball.x - pw/2); cpu.x += (targetX - cpu.x) * 0.1; cpu.x = Math.max(0, Math.min(cpu.x, pongCanvas.width - pw)); if (pongPaused) return; 
+    let targetX = (pongPausedByUser || pongRoundDelay) ? (pongCanvas.width/2 - pw/2) : (ball.x - pw/2); 
+    cpu.x += (targetX - cpu.x) * 0.1; cpu.x = Math.max(0, Math.min(cpu.x, pongCanvas.width - pw)); 
+    
+    if (pongPausedByUser || pongRoundDelay) return; 
     ball.x += ball.dx; ball.y += ball.dy; if (ball.x - ball.r < 0 || ball.x + ball.r > pongCanvas.width) ball.dx = -ball.dx;
+    
     if (ball.y - ball.r < 0) {
         player.score++; pScoreEl.innerText = player.score;
         if(player.score > highScores.pong) { highScores.pong = player.score; localStorage.setItem('pongHighScore', highScores.pong); document.getElementById('pong-highscore').innerText = highScores.pong; }
-        if(player.score >= 3 && !hasWonPong) { hasWonPong = true; checkUltimateWin(); } confetti(); resetBall();
-    } else if (ball.y + ball.r > pongCanvas.height) { cpu.score++; cScoreEl.innerText = cpu.score; resetBall(); }
+        if(player.score >= 3 && !hasWonPong) { hasWonPong = true; checkUltimateWin(); } confetti(); resetBall(false);
+    } else if (ball.y + ball.r > pongCanvas.height) { cpu.score++; cScoreEl.innerText = cpu.score; resetBall(false); }
     if (ball.y + ball.r > player.y && ball.x > player.x && ball.x < player.x + pw) { ball.dy = -Math.abs(ball.dy); ball.dx = (ball.x - (player.x + pw/2)) * 0.15; }
     if (ball.y - ball.r < cpu.y + ph && ball.x > cpu.x && ball.x < cpu.x + pw) { ball.dy = Math.abs(ball.dy); ball.dx = (ball.x - (cpu.x + pw/2)) * 0.15; }
 }
+
 function drawPong() {
     pongCtx.clearRect(0, 0, pongCanvas.width, pongCanvas.height); pongCtx.setLineDash([10, 10]); pongCtx.beginPath(); pongCtx.moveTo(0, pongCanvas.height/2); pongCtx.lineTo(pongCanvas.width, pongCanvas.height/2); pongCtx.strokeStyle = 'rgba(0,0,0,0.1)'; pongCtx.stroke(); pongCtx.setLineDash([]);
     pongCtx.fillStyle = '#fbc2eb'; pongCtx.beginPath(); pongCtx.roundRect(player.x, player.y, pw, ph, 5); pongCtx.fill(); pongCtx.fillStyle = '#a6c1ee'; pongCtx.beginPath(); pongCtx.roundRect(cpu.x, cpu.y, pw, ph, 5); pongCtx.fill();
@@ -249,60 +285,59 @@ function drawPong() {
     pongCtx.beginPath(); pongCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2, true); pongCtx.strokeStyle = '#fff'; pongCtx.lineWidth = 2; pongCtx.stroke(); pongCtx.restore();
 }
 
-
 // ==========================================
-// 8. MUSICA NATIVA
+// 8. MUSICA NATIVA (Con Playlist a Schermo)
 // ==========================================
 const playlist = [ 
     { title: "Canzone 1", src: "assets/brano1.mp3" }, 
-    { title: "Canzone 2", src: "assets/brano2.mp3" } 
+    { title: "Canzone 2", src: "assets/brano2.mp3" },
+    { title: "Canzone 3", src: "assets/brano3.mp3" },
+    { title: "Canzone 4", src: "assets/brano4.mp3" },
+    { title: "Canzone 5", src: "assets/brano5.mp3" },
+    { title: "Canzone 6", src: "assets/brano6.mp3" },
+    { title: "Canzone 7", src: "assets/brano7.mp3" },
+    { title: "Canzone 8", src: "assets/brano8.mp3" },
+    { title: "Canzone 9", src: "assets/brano9.mp3" },
+    { title: "Canzone 10", src: "assets/brano10.mp3" }
 ]; 
-let currentTrackIndex = 0; 
-const bgAudio = new Audio(); 
-bgAudio.volume = 0.5; 
-let isUserPlaying = false; // Memorizza se l'utente ha acceso la musica
 
-const btnPlayPause = document.getElementById('play-pause-btn'); 
-const trackTitle = document.getElementById('track-title'); 
-const recordCover = document.getElementById('record-cover');
+let currentTrackIndex = 0; const bgAudio = new Audio(); bgAudio.volume = 0.5; let isUserPlaying = false; 
+const btnPlayPause = document.getElementById('play-pause-btn'); const trackTitle = document.getElementById('track-title'); const recordCover = document.getElementById('record-cover');
+const playlistList = document.getElementById('playlist-list');
 
-function loadTrack(index) { 
-    bgAudio.src = playlist[index].src; 
-    trackTitle.innerText = playlist[index].title; 
-} 
+// Genera la grafica della playlist a schermo
+function renderPlaylistUI() {
+    playlistList.innerHTML = '';
+    playlist.forEach((track, index) => {
+        let li = document.createElement('li');
+        li.className = 'playlist-item' + (index === currentTrackIndex ? ' active' : '');
+        let icon = (index === currentTrackIndex && isUserPlaying) ? 'fa-chart-simple' : 'fa-music'; // Se suona c'è un'icona diversa!
+        
+        li.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${track.title}</span>`;
+        li.addEventListener('click', () => {
+            if (currentTrackIndex === index && isUserPlaying) { toggleAudio(); } // Se clicchi quella che sta già suonando, va in pausa
+            else {
+                currentTrackIndex = index; loadTrack(currentTrackIndex);
+                bgAudio.play().catch(e => console.log(e)); isUserPlaying = true;
+                btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i>'; recordCover.classList.add('playing'); renderPlaylistUI();
+            }
+        });
+        playlistList.appendChild(li);
+    });
+}
+
+function loadTrack(index) { bgAudio.src = playlist[index].src; trackTitle.innerText = playlist[index].title; renderPlaylistUI(); } 
 loadTrack(currentTrackIndex);
 
 function toggleAudio() { 
-    if (bgAudio.paused) { 
-        bgAudio.play().catch(e => console.log("Errore audio:", e)); 
-        btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i>'; 
-        recordCover.classList.add('playing');
-        isUserPlaying = true; // La musica è accesa
-    } else { 
-        bgAudio.pause(); 
-        btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>'; 
-        recordCover.classList.remove('playing');
-        isUserPlaying = false; // La musica è in pausa
-    } 
+    if (bgAudio.paused) { bgAudio.play().catch(e=>console.log(e)); btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i>'; recordCover.classList.add('playing'); isUserPlaying = true; } 
+    else { bgAudio.pause(); btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>'; recordCover.classList.remove('playing'); isUserPlaying = false; } 
+    renderPlaylistUI();
 }
+function nextTrack() { currentTrackIndex = (currentTrackIndex + 1) % playlist.length; loadTrack(currentTrackIndex); if (isUserPlaying) { bgAudio.play().catch(e=>console.log(e)); recordCover.classList.add('playing'); } }
+function prevTrack() { currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length; loadTrack(currentTrackIndex); if (isUserPlaying) { bgAudio.play().catch(e=>console.log(e)); recordCover.classList.add('playing'); } }
 
-function nextTrack() { 
-    currentTrackIndex = (currentTrackIndex + 1) % playlist.length; 
-    loadTrack(currentTrackIndex); 
-    if (isUserPlaying) bgAudio.play().catch(e => console.log(e)); 
-}
-
-function prevTrack() { 
-    currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length; 
-    loadTrack(currentTrackIndex); 
-    if (isUserPlaying) bgAudio.play().catch(e => console.log(e)); 
-}
-
-// Quando la canzone finisce, passa automaticamente alla prossima
-bgAudio.addEventListener('ended', () => {
-    nextTrack();
-}); 
-
+bgAudio.addEventListener('ended', nextTrack); 
 btnPlayPause.addEventListener('click', toggleAudio); 
 document.getElementById('next-track').addEventListener('click', nextTrack); 
 document.getElementById('prev-track').addEventListener('click', prevTrack);
