@@ -1,8 +1,8 @@
 // ==========================================
 // 1. CONFIGURAZIONE FILE E RECORD
 // ==========================================
-const imgSorella = 'assets/faccia-sorella.png'; 
-const imgTu = 'assets/faccia-tua.png';
+const imgSorella = 'assets/faccia_sorella.jpg'; 
+const imgTu = 'assets/faccia_mia.jpg';
 
 let highScores = {
     tris: parseInt(localStorage.getItem('trisWins')) || 0,
