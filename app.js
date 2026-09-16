@@ -249,13 +249,60 @@ function drawPong() {
     pongCtx.beginPath(); pongCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2, true); pongCtx.strokeStyle = '#fff'; pongCtx.lineWidth = 2; pongCtx.stroke(); pongCtx.restore();
 }
 
+
 // ==========================================
 // 8. MUSICA NATIVA
 // ==========================================
-const playlist = [ { title: "Canzone 1", src: "assets/brano1.mp3" }, { title: "Canzone 2", src: "assets/brano2.mp3" }, { title: "Canzone 3", src: "assets/brano3.mp3" }, { title: "Canzone 4", src: "assets/brano4.mp3" }, { title: "Canzone 5", src: "assets/brano5.mp3" }, { title: "Canzone 6", src: "assets/brano6.mp3" }, { title: "Canzone 7", src: "assets/brano7.mp3" }, { title: "Canzone 8", src: "assets/brano8.mp3" }, { title: "Canzone 9", src: "assets/brano9.mp3" }, { title: "Canzone 10", src: "assets/brano10.mp3" }]; let currentTrackIndex = 0; const bgAudio = new Audio(); bgAudio.volume = 0.5; bgAudio.loop = false; 
-const btnPlayPause = document.getElementById('play-pause-btn'); const trackTitle = document.getElementById('track-title'); const recordCover = document.getElementById('record-cover');
-function loadTrack(index) { bgAudio.src = playlist[index].src; trackTitle.innerText = playlist[index].title; } loadTrack(currentTrackIndex);
-function toggleAudio() { if (bgAudio.paused) { bgAudio.play(); btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i>'; recordCover.classList.add('playing'); } else { bgAudio.pause(); btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>'; recordCover.classList.remove('playing'); } }
-function nextTrack() { currentTrackIndex = (currentTrackIndex + 1) % playlist.length; loadTrack(currentTrackIndex); if (!bgAudio.paused) bgAudio.play(); }
-function prevTrack() { currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length; loadTrack(currentTrackIndex); if (!bgAudio.paused) bgAudio.play(); }
-bgAudio.addEventListener('ended', nextTrack); btnPlayPause.addEventListener('click', toggleAudio); document.getElementById('next-track').addEventListener('click', nextTrack); document.getElementById('prev-track').addEventListener('click', prevTrack);
+const playlist = [ 
+    { title: "Canzone 1", src: "assets/brano1.mp3" }, 
+    { title: "Canzone 2", src: "assets/brano2.mp3" } 
+]; 
+let currentTrackIndex = 0; 
+const bgAudio = new Audio(); 
+bgAudio.volume = 0.5; 
+let isUserPlaying = false; // Memorizza se l'utente ha acceso la musica
+
+const btnPlayPause = document.getElementById('play-pause-btn'); 
+const trackTitle = document.getElementById('track-title'); 
+const recordCover = document.getElementById('record-cover');
+
+function loadTrack(index) { 
+    bgAudio.src = playlist[index].src; 
+    trackTitle.innerText = playlist[index].title; 
+} 
+loadTrack(currentTrackIndex);
+
+function toggleAudio() { 
+    if (bgAudio.paused) { 
+        bgAudio.play().catch(e => console.log("Errore audio:", e)); 
+        btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i>'; 
+        recordCover.classList.add('playing');
+        isUserPlaying = true; // La musica è accesa
+    } else { 
+        bgAudio.pause(); 
+        btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>'; 
+        recordCover.classList.remove('playing');
+        isUserPlaying = false; // La musica è in pausa
+    } 
+}
+
+function nextTrack() { 
+    currentTrackIndex = (currentTrackIndex + 1) % playlist.length; 
+    loadTrack(currentTrackIndex); 
+    if (isUserPlaying) bgAudio.play().catch(e => console.log(e)); 
+}
+
+function prevTrack() { 
+    currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length; 
+    loadTrack(currentTrackIndex); 
+    if (isUserPlaying) bgAudio.play().catch(e => console.log(e)); 
+}
+
+// Quando la canzone finisce, passa automaticamente alla prossima
+bgAudio.addEventListener('ended', () => {
+    nextTrack();
+}); 
+
+btnPlayPause.addEventListener('click', toggleAudio); 
+document.getElementById('next-track').addEventListener('click', nextTrack); 
+document.getElementById('prev-track').addEventListener('click', prevTrack);
