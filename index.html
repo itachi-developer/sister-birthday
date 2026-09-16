@@ -5,44 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Auguri Sorellina! 💖</title>
     
-    <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- FontAwesome per le icone -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icona-192.png">
     <meta name="theme-color" content="#fbc2eb">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
-    <!-- Sfondo animato super elegante -->
     <div class="bg-shape shape-1"></div>
     <div class="bg-shape shape-2"></div>
+
+    <!-- BANNER VITTORIA GLOBALE -->
+    <div id="ultimate-banner" class="hidden-banner glass-card">
+        <h2>🎉 Congratulazioni! 🎉</h2>
+        <p>Hai battuto tutti i giochi!</p>
+        <p class="subtitle">Ora vai in camera tua e guarda sotto il cuscino... 👀</p>
+        <button class="btn primary-btn" id="close-banner">Chiudi</button>
+    </div>
 
     <!-- HOME -->
     <section id="home" class="view active">
         <div class="container glass-card">
             <h1>Buon 17° <br>Compleanno! ✨</h1>
-            <p class="subtitle">Ho creato questo piccolo spazio digitale per te.</p>
+            <p class="subtitle">Ho creato questo piccolo spazio digitale solo per te.</p>
             
             <div class="polaroid">
-                <img src="assets/foto-insieme.jpg" alt="Sbang" id="hero-pic">
-                <div class="polaroid-caption">❤️</div>
+                <img src="assets/foto-insieme.jpg" alt="Noi due" id="hero-pic">
+                <div class="polaroid-caption">Ti voglio bene! ❤️</div>
             </div>
             
-            <!-- NUOVO MESSAGGIO E BOTTONE MUSICA -->
             <p style="font-weight: bold; color: #e91e63; margin-top: 15px;">
-                🎁 Sfida: Completa almeno una vittoria a Tris, una a Snake e una a Pong.
+                🎁 Sfida: Vinci a Tris, raggiungi 50 a Snake e fai 3 punti a Pong!
             </p>
             
             <button class="btn primary-btn" id="go-to-music" style="margin-top: 15px; margin-bottom: 20px;">
                 <i class="fa-solid fa-music"></i> Vai alla Playlist
             </button>
-            
-            <br>
-            <i class="fa-solid fa-chevron-down bounce-icon"></i>
+            <br><i class="fa-solid fa-chevron-down bounce-icon"></i>
         </div>
     </section>
 
@@ -51,7 +53,8 @@
         <div class="container glass-card">
             <h2>Tris di Facce</h2>
             <div class="score-badge">Vittorie totali: <span id="tris-wins">0</span></div>
-<div class="status badge" id="tris-status">Tocca a te!</div>
+            <div class="status badge" id="tris-status" style="display:block; margin: 10px auto;">Tocca a te!</div>
+            
             <div class="board" id="board">
                 <div class="cell" data-index="0"></div><div class="cell" data-index="1"></div><div class="cell" data-index="2"></div>
                 <div class="cell" data-index="3"></div><div class="cell" data-index="4"></div><div class="cell" data-index="5"></div>
@@ -71,7 +74,6 @@
                 <canvas id="gameCanvas" width="280" height="280"></canvas>
             </div>
             
-            <!-- Controlli Touch eleganti -->
             <div class="d-pad">
                 <button class="glass-btn" id="up"><i class="fa-solid fa-caret-up"></i></button>
                 <div class="middle-row">
@@ -88,53 +90,47 @@
         <div class="container glass-card">
             <h2>Pong 🏓</h2>
             <div class="score-badge">Tu: <span id="pong-score-player">0</span> - CPU: <span id="pong-score-cpu">0</span></div>
-<div class="score-badge" style="margin-bottom: 10px;">Punti massimi di fila: <span id="pong-highscore">0</span></div>
-<button class="btn primary-btn" id="btn-pong-pause" style="margin-bottom: 15px; padding: 10px 20px;"><i class="fa-solid fa-play"></i> Start</button>
+            <div class="score-badge" style="margin-bottom: 10px; display:block;">Punti massimi: <span id="pong-highscore">0</span></div>
+            
+            <button class="btn primary-btn" id="btn-pong-pause" style="margin-bottom: 15px; padding: 10px 20px;"><i class="fa-solid fa-play"></i> Start</button>
             
             <div class="canvas-container">
                 <canvas id="pongCanvas" width="280" height="350"></canvas>
             </div>
-            <p class="hint" style="margin-top: 10px;">Scorri il dito sul campo per muovere la barra rosa!</p>
+            <p class="hint">Scorri il dito sul campo per muovere la barra rosa!</p>
         </div>
     </section>
 
     <!-- PLAYLIST -->
     <section id="musica" class="view">
         <div class="container glass-card">
-            <h2>La Vibe 🎵</h2>
-            <p class="subtitle">Ecco una colonna sonora.</p>
-            <div class="spotify-wrapper">
-                <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DZ06evO2D2WFa?utm_source=generator&si=96acc88a11e34423" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <h2>La nostra Vibe 🎵</h2>
+            <p class="subtitle">Le tue canzoni preferite, zero lag.</p>
+            
+            <div class="music-player">
+                <div class="record-wrapper">
+                    <img src="assets/foto-insieme.jpg" alt="Copertina" id="record-cover" class="record">
+                </div>
+                <h3 id="track-title">Caricamento...</h3>
+                
+                <div class="player-controls">
+                    <button class="glass-btn small-btn" id="prev-track"><i class="fa-solid fa-backward"></i></button>
+                    <button class="primary-btn play-btn" id="play-pause-btn"><i class="fa-solid fa-play"></i></button>
+                    <button class="glass-btn small-btn" id="next-track"><i class="fa-solid fa-forward"></i></button>
+                </div>
             </div>
+            <p class="hint" style="margin-top:20px">La musica suona mentre giochi! 🎮</p>
         </div>
     </section>
 
-    <!-- BOTTOM NAVIGATION STILE iOS (Aggiornata con Pong) -->
+    <!-- NAVBAR -->
     <nav class="bottom-nav">
-        <button class="nav-item active" data-target="home">
-            <i class="fa-solid fa-house"></i><span>Home</span>
-        </button>
-        <button class="nav-item" data-target="tris">
-            <i class="fa-solid fa-gamepad"></i><span>Tris</span>
-        </button>
-        <button class="nav-item" data-target="snake">
-            <i class="fa-solid fa-worm"></i><span>Snake</span>
-        </button>
-        <button class="nav-item" data-target="pong">
-            <i class="fa-solid fa-table-tennis-paddle-ball"></i><span>Pong</span>
-        </button>
-        <button class="nav-item" data-target="musica">
-            <i class="fa-solid fa-music"></i><span>Musica</span>
-        </button>
+        <button class="nav-item active" data-target="home"><i class="fa-solid fa-house"></i><span>Home</span></button>
+        <button class="nav-item" data-target="tris"><i class="fa-solid fa-gamepad"></i><span>Tris</span></button>
+        <button class="nav-item" data-target="snake"><i class="fa-solid fa-worm"></i><span>Snake</span></button>
+        <button class="nav-item" data-target="pong"><i class="fa-solid fa-table-tennis-paddle-ball"></i><span>Pong</span></button>
+        <button class="nav-item" data-target="musica"><i class="fa-solid fa-music"></i><span>Musica</span></button>
     </nav>
-
-    <!-- BANNER VITTORIA GLOBALE -->
-    <div id="ultimate-banner" class="hidden-banner glass-card">
-        <h2>🎉 Congratulazioni! 🎉</h2>
-        <p>Hai battuto tutti i giochi!</p>
-        <p class="subtitle">Ora vai in camera tua e guarda sotto il cuscino... 👀</p>
-        <button class="btn primary-btn" id="close-banner">Chiudi</button>
-    </div>
 
     <script src="app.js"></script>
 </body>
